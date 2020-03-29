@@ -39,6 +39,64 @@ class User:
 
         return True
 
+class UserDetails:
+    firstName = ""
+    lastName = ""
+    DOB = ""
+    Address = ""
+    altAaddress = ""
+
+    def __init__(self, firstName="", lastName="", DOB="", Address="",altAaddress=""):
+        self.firstName = firstName
+        self.lastName = lastName
+        self.DOB = DOB
+        self.Address = Address
+        self.altAaddress = altAaddress
+
+    @classmethod
+    def parse(self, user_details = ""):
+            
+
+        user_details:UserDetails = json.loads(user_details)
+
+        userDetails = UserDetails()
+        userDetails.firstName = user_details['firstName']
+        userDetails.lastName = user_details['lastName']
+        userDetails.DOB = user_details['DOB']
+        userDetails.Address = user_details['Address']
+        userDetails.altAaddress = user_details['altAaddress']
+
+        return userDetails
+
+
+class UserManagement:
+
+    myUser = None
+    userDetails = None
+
+    def __init__(self, user:User, user_details=""):
+        if(user == None):
+            
+            print("User undefined")
+            return
+
+        #verify if token belongs to the user
+        if (user.tokenVerify() == False):
+            
+            print("Could not verify Token!")
+            return
+
+        user_token = user.userToken
+
+        payload:User = ff_jwt.decode(user_token)
+
+        self.myUser = user
+
+    def updateUserDetails(self):
+
+        
+        pass
+
 
 #TODO Add Erros incase of UserLogin Failure 
 class UserLogin:

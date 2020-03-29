@@ -1,9 +1,18 @@
-from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin
+from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement
+
+import json
 
 class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
+
+        userDetails = UserDetails('reznov','kalishov','2000','us','ru')
+        userDetails = UserDetails.parse(json.dumps(userDetails.__dict__))
+
+        print(userDetails.__dict__)
+
+"""
         #tests
 
         #token verify check
@@ -30,7 +39,7 @@ class Main:
         #user registration check
         myUser = UserRegistration("user3@freshfoods.com","us2er123").register()
         print("User Registration (False) : {0}".format(myUser != None))
-
+"""
 
 if __name__ == "__main__":
     main = Main()
