@@ -1,12 +1,16 @@
 # PyFreshFoods
  Python library for FreshFoods Back-End
 
+# Prerequisites
+
+MongoDB Server
+
 # How to Setup
 
 ### 1. Create a venv
 
 ```
-    C:\Users\<user_name>\Documents\GitHub> py -m venv PyFreshFoods
+    C:\Users\<user_name>\Documents\GitHub\PyFreshFoods> py -m venv .
 ```
 
 
@@ -28,3 +32,4 @@ Name of the key must be given as **jwt-key**
 ```
     C:\Users\<user_name>\Documents\GitHub\PyFreshFoods> pip install -r requirements.txt
 ```
+

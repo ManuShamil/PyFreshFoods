@@ -4,3 +4,4 @@ Scripts
 jwt-key
 jwt-key.pub
 pyvenv.cfg
+.vscode
