@@ -3,4 +3,4 @@ Lib
 Scripts
 jwt-key
 jwt-key.pub
-pyenv.cfg
+pyvenv.cfg
