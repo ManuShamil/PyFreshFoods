@@ -69,7 +69,7 @@ class Market:
 
         return sequenceValue
 
-        @classmethod
+    @classmethod
     def getNextOrderID(self):
     
         sequenceValue = FreshFoodsDBConnector('freshfoods','counter').findOneAndUpdate({

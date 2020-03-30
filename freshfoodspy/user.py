@@ -230,6 +230,8 @@ class UserRegistration:
 
         user = UserLogin(self.userEmail).loginEmail(self.userPassword)
 
+        return user
+
 
     def updateAndGetNextSequence(self):
         

@@ -1,4 +1,4 @@
-from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, Market, MarketItem
+from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement
 
 import json
 
@@ -6,15 +6,12 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
-
-        myUser:User = UserLogin("user2@freshfoods.com").loginEmail("user123")  
-
-        newItem = MarketItem(sellerID=myUser.userID, itemName='sunflower oil 1L', itemPrice='500')
-        Market.addMarketItem(myUser, newItem)
-
-        myUser:User = UserLogin("user3@freshfoods.com").loginEmail("us2er123")
-
-        Market.placeOrder(newItem)
+        myUser:User = UserRegistration('user1@gmail.com','user123').register()
+        new_details = myUser.userDetails
+        new_details.lastName = "Modified User"
+        UserManagement(myUser).updateUserDetails(
+            new_details
+        )
 
         print(myUser.__dict__)
         print(myUser.userDetails.__dict__)
