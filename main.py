@@ -1,4 +1,4 @@
-from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement
+from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, UserDetails
 
 import json
 
@@ -6,12 +6,10 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
-        myUser:User = UserRegistration('user1@gmail.com','user123').register()
-        new_details = myUser.userDetails
-        new_details.lastName = "Modified User"
-        UserManagement(myUser).updateUserDetails(
-            new_details
-        )
+        myUser:User = UserRegistration("user7@gmail.com",'user123').register()
+        new_details:UserDetails = myUser.userDetails
+        new_details.firstName = "hi"
+        UserManagement(myUser).updateUserDetails(new_details)
 
         print(myUser.__dict__)
         print(myUser.userDetails.__dict__)

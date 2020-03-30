@@ -106,6 +106,23 @@ class UserManagement:
         
         pass
 
+
+    @classmethod
+    def insertUserDetails(self, userID):
+
+        user_details=UserDetails()
+
+        """ Only to be called from UserRegistration.register() """
+        FreshFoodsDBConnector('freshfoods','userdetails').update({
+            "_id": userID
+        },{
+            '$set': user_details.__dict__  
+        },
+        upsert=True
+        )
+        
+        pass
+
     def getUserDetails(self):
 
         user_details = FreshFoodsDBConnector('freshfoods','userdetails').findOne({
@@ -216,13 +233,17 @@ class UserRegistration:
 
         hashedpassword = bcrypt.hashpw(self.userPassword.encode('utf-8'), bcrypt.gensalt())
 
-        sequenceValue = self.updateAndGetNextSequence()
+        sequenceValue = self.updateAndGetNextSequence() #this will be the next userID (Auto Increment)
                     
+        #add user to user database
         FreshFoodsDBConnector('freshfoods','user').insert({
                                 "_id": sequenceValue,
                                 "userEmail": self.userEmail,
                                 "userPassword": hashedpassword
                             })
+
+        #add user details to user database
+        UserManagement.insertUserDetails(sequenceValue)
 
         #now try logging in to the account
 
