@@ -55,11 +55,11 @@ class FreshFoodsDBConnector:
 
         return self.client[self.databaseName][self.collectionName].find_one_and_update(query,update,projection)
 
-    def update(self, query, data):
+    def update(self, query, data, upsert=False):
         if self.isConnected != True:
             return False
 
-        return self.client[self.databaseName][self.collectionName].update_one(query, data)
+        return self.client[self.databaseName][self.collectionName].update_one(query, data, upsert=upsert)
 
 
 
