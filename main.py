@@ -6,9 +6,11 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
+        myUser = UserLogin("user2@freshfoods.com").loginEmail("user123")
+        userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
 
-        userDetails = UserDetails('reznov','kalishov','2000','us','ru')
-        userDetails = UserDetails.parse(json.dumps(userDetails.__dict__))
+        manageUser = UserManagement(myUser, userDetails)
+        manageUser.updateUserDetails()
 
         print(userDetails.__dict__)
 

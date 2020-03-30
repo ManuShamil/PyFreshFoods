@@ -74,7 +74,7 @@ class UserManagement:
     myUser = None
     userDetails = None
 
-    def __init__(self, user:User, user_details=""):
+    def __init__(self, user:User, user_details:UserDetails):
         if(user == None):
             
             print("User undefined")
@@ -91,11 +91,22 @@ class UserManagement:
         payload:User = ff_jwt.decode(user_token)
 
         self.myUser = user
+        self.userDetails = user_details
 
     def updateUserDetails(self):
 
+        update = self.userDetails.toJSON()
+
+        FreshFoodsDBConnector('freshfoods','userdetails').update({
+            "_id": self.myUser.userID
+        },{
+            '$set': self.userDetails.__dict__  
+        },
+        True
+        )
         
         pass
+
 
 
 #TODO Add Erros incase of UserLogin Failure 
