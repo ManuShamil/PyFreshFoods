@@ -6,13 +6,22 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
-        myUser = UserLogin("user2@freshfoods.com").loginEmail("user123")
-        userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
+        myUser:User = UserLogin("user2@freshfoods.com").loginEmail("user123")
+        new_details = myUser.userDetails
+        new_details.lastName = "Modified User"
+        UserManagement(myUser).updateUserDetails(
+            new_details
+        )
 
-        manageUser = UserManagement(myUser, userDetails)
-        manageUser.updateUserDetails()
+        print(myUser.__dict__)
+        print(myUser.userDetails.__dict__)
 
-        print(userDetails.__dict__)
+        #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
+
+        #manageUser = UserManagement(myUser, userDetails)
+        #manageUser.updateUserDetails()
+
+        #print(userDetails.__dict__)
 
 """
         #tests

@@ -4,11 +4,41 @@ import bcrypt
 from .db import FreshFoodsDBConnector
 from .ff_jwt import ff_jwt
 
+class UserDetails:
+    firstName = ""
+    lastName = ""
+    DOB = ""
+    Address = ""
+    altAaddress = ""
+
+    def __init__(self, firstName="", lastName="", DOB="", Address="",altAaddress=""):
+        self.firstName = firstName
+        self.lastName = lastName
+        self.DOB = DOB
+        self.Address = Address
+        self.altAaddress = altAaddress
+
+    @classmethod
+    def parse(self, user_details=""):
+            
+        if(type(user_details) == str):
+            user_details:UserDetails = json.loads(user_details)
+
+        userDetails = UserDetails()
+        userDetails.firstName = user_details['firstName']
+        userDetails.lastName = user_details['lastName']
+        userDetails.DOB = user_details['DOB']
+        userDetails.Address = user_details['Address']
+        userDetails.altAaddress = user_details['altAaddress']
+
+        return userDetails
+        
 #Main Data Model
 class User:
     userID = ""
     userEmail = ""
     userToken = ""
+    userDetails = None
 
     def __init__(self,userID=None, email="", token=""):
         """Creates a user Object
@@ -21,6 +51,9 @@ class User:
         self.userEmail = email
         self.userToken = token
 
+    def setUserDetails(self, user_details:UserDetails):
+        self.userDetails = user_details
+        
     def isAuthorized(self):
         if ff_jwt.verify(self.userToken):
             return True
@@ -39,42 +72,11 @@ class User:
 
         return True
 
-class UserDetails:
-    firstName = ""
-    lastName = ""
-    DOB = ""
-    Address = ""
-    altAaddress = ""
-
-    def __init__(self, firstName="", lastName="", DOB="", Address="",altAaddress=""):
-        self.firstName = firstName
-        self.lastName = lastName
-        self.DOB = DOB
-        self.Address = Address
-        self.altAaddress = altAaddress
-
-    @classmethod
-    def parse(self, user_details = ""):
-            
-
-        user_details:UserDetails = json.loads(user_details)
-
-        userDetails = UserDetails()
-        userDetails.firstName = user_details['firstName']
-        userDetails.lastName = user_details['lastName']
-        userDetails.DOB = user_details['DOB']
-        userDetails.Address = user_details['Address']
-        userDetails.altAaddress = user_details['altAaddress']
-
-        return userDetails
-
-
 class UserManagement:
 
     myUser = None
-    userDetails = None
 
-    def __init__(self, user:User, user_details:UserDetails):
+    def __init__(self, user:User):
         if(user == None):
             
             print("User undefined")
@@ -91,21 +93,28 @@ class UserManagement:
         payload:User = ff_jwt.decode(user_token)
 
         self.myUser = user
-        self.userDetails = user_details
 
-    def updateUserDetails(self):
-
-        update = self.userDetails.toJSON()
+    def updateUserDetails(self, user_details:UserDetails):
 
         FreshFoodsDBConnector('freshfoods','userdetails').update({
             "_id": self.myUser.userID
         },{
-            '$set': self.userDetails.__dict__  
+            '$set': user_details.__dict__  
         },
         True
         )
         
         pass
+
+    def getUserDetails(self):
+
+        user_details = FreshFoodsDBConnector('freshfoods','userdetails').findOne({
+            "_id": self.myUser.userID
+        })
+
+        if (user_details != None):
+
+            return UserDetails.parse(user_details)
 
 
 
@@ -158,7 +167,11 @@ class UserLogin:
                 user = User(userid, email) #create new user object without token
                 token = ff_jwt.encode(user.__dict__) #convert user object to token
 
-                return User(user.userID, user.userEmail, token) #return newly created user object with token included
+                loggedUser = User(user.userID, user.userEmail, token) #return newly created user object with token included
+
+
+                loggedUser.setUserDetails(UserManagement(loggedUser).getUserDetails()) #set User Information
+                return loggedUser
                 
             else:
                 print("password is incorrect!")
