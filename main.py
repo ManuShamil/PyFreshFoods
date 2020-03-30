@@ -1,4 +1,4 @@
-from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, UserDetails
+from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, UserDetails, Market, MarketItem, Order
 
 import json
 
@@ -6,13 +6,12 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
-        myUser:User = UserRegistration("user7@gmail.com",'user123').register()
-        new_details:UserDetails = myUser.userDetails
-        new_details.firstName = "hi"
-        UserManagement(myUser).updateUserDetails(new_details)
-
+        myUser:User = UserLogin("user8@gmail.com").loginEmail('user123')
         print(myUser.__dict__)
         print(myUser.userDetails.__dict__)
+
+        Market.placeOrder(Order(MarketItem(0,13,"sunflower oil","200"),myUser))
+
 
         #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
 
@@ -21,7 +20,7 @@ class Main:
 
         #print(userDetails.__dict__)
 
-"""
+        """
         #tests
 
         #token verify check
@@ -48,7 +47,7 @@ class Main:
         #user registration check
         myUser = UserRegistration("user3@freshfoods.com","us2er123").register()
         print("User Registration (False) : {0}".format(myUser != None))
-"""
+        """
 
 if __name__ == "__main__":
     main = Main()

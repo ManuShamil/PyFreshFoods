@@ -100,8 +100,7 @@ class UserManagement:
             "_id": self.myUser.userID
         },{
             '$set': user_details.__dict__  
-        },
-        True
+        },True
         )
         
         pass
