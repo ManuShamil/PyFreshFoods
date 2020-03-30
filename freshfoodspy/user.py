@@ -19,7 +19,7 @@ class UserDetails:
         self.altAaddress = altAaddress
 
     @classmethod
-    def parse(self, user_details=""):
+    def parse(cls, user_details=""):
             
         if(type(user_details) == str):
             user_details:UserDetails = json.loads(user_details)
@@ -108,7 +108,7 @@ class UserManagement:
 
 
     @classmethod
-    def insertUserDetails(self, userID):
+    def insertUserDetails(cls, userID):
 
         user_details=UserDetails()
 
