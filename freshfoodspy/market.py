@@ -36,9 +36,9 @@ class Order:
 class Market:
 
     @classmethod
-    def placeOrder(self, new_order:Order):
+    def placeOrder(cls, new_order:Order):
         
-        sequenceValue = self.getNextOrderID()
+        sequenceValue = cls.getNextOrderID()
 
         FreshFoodsDBConnector('freshfoods','orders').insert({
             "_id": sequenceValue,
@@ -49,13 +49,10 @@ class Market:
         print("[Market] : User {0} placed an order for item : {1}".format(new_order.buyerID, new_order.itemName))
 
 
-
-
-
     @classmethod
-    def addMarketItem(self, user:User, item:MarketItem):
+    def addMarketItem(cls, user:User, item:MarketItem):
 
-        sequenceValue = self.getNextItemID()
+        sequenceValue = cls.getNextItemID()
 
         FreshFoodsDBConnector('freshfoods','market').insert({
             "_id": sequenceValue,
@@ -65,7 +62,7 @@ class Market:
         })
 
     @classmethod
-    def getNextItemID(self):
+    def getNextItemID(cls):
     
         sequenceValue = FreshFoodsDBConnector('freshfoods','counter').findOneAndUpdate({
                             "$and": [
@@ -84,7 +81,7 @@ class Market:
         return sequenceValue
 
     @classmethod
-    def getNextOrderID(self):
+    def getNextOrderID(cls):
     
         sequenceValue = FreshFoodsDBConnector('freshfoods','counter').findOneAndUpdate({
                             "$and": [
@@ -101,6 +98,24 @@ class Market:
         sequenceValue += 1
 
         return sequenceValue
+
+    @classmethod
+    def getAllItems(cls):
+
+        market_items = FreshFoodsDBConnector('freshfoods','market').findAll({})
+
+        allItems = []
+
+        for x in market_items:
+            item = MarketItem()
+            item.itemID = x['_id']
+            item.sellerID = x['sellerID']
+            item.itemName = x['itemName']
+            item.itemPrice = x['itemPrice']
+
+            allItems.append(item)
+
+        return allItems
 
         
 

@@ -6,12 +6,16 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
-        myUser:User = UserLogin("user8@gmail.com").loginEmail('user123')
-        print(myUser.__dict__)
-        print(myUser.userDetails.__dict__)
+        #myUser:User = UserLogin("user8@gmail.com").loginEmail('user123')
+        #print(myUser.__dict__)
+        #print(myUser.userDetails.__dict__)
 
-        Market.placeOrder(Order(MarketItem(0,13,"sunflower oil","200"),myUser))
+        #Market.placeOrder(Order(MarketItem(0,13,"sunflower oil","200"),myUser))
 
+        items = Market.getAllItems()
+
+        for x in items:
+            print(x.__dict__)
 
         #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
 
