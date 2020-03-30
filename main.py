@@ -6,7 +6,7 @@ class Main:
     def __init__(self):
         print("FreshFoods Back-End Logic")
 
-        myUser:User = UserLogin("user2@freshfoods.com").loginEmail("user123")
+        myUser:User = UserRegistration('user1@gmail.com','user123').register()
         new_details = myUser.userDetails
         new_details.lastName = "Modified User"
         UserManagement(myUser).updateUserDetails(
