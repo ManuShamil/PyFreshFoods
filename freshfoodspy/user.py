@@ -3,6 +3,7 @@ import bcrypt
 
 from .db import FreshFoodsDBConnector
 from .ff_jwt import ff_jwt
+from .market import Market, MarketItem
 
 class UserDetails:
     firstName = ""
@@ -72,6 +73,13 @@ class User:
 
         return True
 
+    def placeOrder(self, item:MarketItem, qty:int):
+
+        new_order = item.createOrder(self, qty)
+
+        Market.placeOrder(new_order)
+
+
 class UserManagement:
 
     myUser = None
@@ -117,7 +125,7 @@ class UserManagement:
         },{
             '$set': user_details.__dict__  
         },
-        upsert=True
+        insert_new=True
         )
         
         pass
