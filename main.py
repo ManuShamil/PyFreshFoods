@@ -12,10 +12,20 @@ class Main:
 
         #Market.placeOrder(Order(MarketItem(0,13,"sunflower oil","200"),myUser))
 
+        #myUser:User = UserLogin('user7@gmail.com').loginEmail('user123')
+        
+        #myItem:MarketItem = MarketItem.buildObject(myUser, "Frozen Chicken 1000g", 200, 451)
+
+        #Market.addMarketItem(myUser, myItem)
+
         items = Market.getAllItems()
 
         for x in items:
             print(x.__dict__)
+
+        myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
+
+        myUser.placeOrder(items[2], 11)
 
         #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
 
