@@ -42,6 +42,7 @@ class Order:
     buyerID = -1
     itemName = ""
     itemQuantity = -1
+    totalPrice = -1
 
     def __init__(self, item:MarketItem, user, qty:int):
         """Creates an Order Object (required by MarketItem class to place Orders)
@@ -55,20 +56,22 @@ class Order:
         self.buyerID = user.userID
         self.itemName = item.itemName
         self.itemQuantity = qty
+        self.totalPrice = qty * item.itemPrice
 
 class Market:
 
-    @classmethod
-    def placeOrder(cls, new_order:Order):
+    @staticmethod
+    def placeOrder(new_order:Order):
         
-        sequenceValue = cls.getNextOrderID()
+        sequenceValue = Market.getNextOrderID()
 
 
         FreshFoodsDBConnector('freshfoods','orders').insert({
             "_id": sequenceValue,
             "itemID": new_order.itemID,
             "buyerID": new_order.buyerID,
-            "itemQuantity": new_order.itemQuantity
+            "itemQuantity": new_order.itemQuantity,
+            "totalPrice": new_order.totalPrice
         })
 
         #decrement the quantity in new Market Listing
@@ -88,10 +91,10 @@ class Market:
         print("[Market] : User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.buyerID, new_order.itemName, new_order.itemQuantity))
 
 
-    @classmethod
-    def addMarketItem(cls, user, item:MarketItem):
+    @staticmethod
+    def addMarketItem(user, item:MarketItem):
 
-        sequenceValue = cls.getNextItemID()
+        sequenceValue = Market.getNextItemID()
 
         FreshFoodsDBConnector('freshfoods','market').insert({
             "_id": sequenceValue,
@@ -101,8 +104,8 @@ class Market:
             "itemQuantity": item.itemQuantity
         })
 
-    @classmethod
-    def getNextItemID(cls):
+    @staticmethod
+    def getNextItemID():
     
         sequenceValue = FreshFoodsDBConnector('freshfoods','counter').findOneAndUpdate({
                             "$and": [
@@ -120,8 +123,8 @@ class Market:
 
         return sequenceValue
 
-    @classmethod
-    def getNextOrderID(cls):
+    @staticmethod
+    def getNextOrderID():
     
         sequenceValue = FreshFoodsDBConnector('freshfoods','counter').findOneAndUpdate({
                             "$and": [
@@ -140,7 +143,7 @@ class Market:
         return sequenceValue
 
     @staticmethod
-    def getAllItems(cls):
+    def getAllItems():
 
         market_items = FreshFoodsDBConnector('freshfoods','market').findAll({})
 
@@ -158,8 +161,8 @@ class Market:
 
         return allItems
 
-    @classmethod
-    def getItem(cls, item_id):
+    @staticmethod
+    def getItem(item_id):
 
         item = FreshFoodsDBConnector('freshfoods','market').findOne({
             "_id": item_id
