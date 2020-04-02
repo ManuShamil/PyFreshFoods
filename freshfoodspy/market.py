@@ -63,7 +63,6 @@ class Market:
         
         sequenceValue = cls.getNextOrderID()
 
-        print(new_order.itemID)
 
         FreshFoodsDBConnector('freshfoods','orders').insert({
             "_id": sequenceValue,
@@ -140,7 +139,7 @@ class Market:
 
         return sequenceValue
 
-    @classmethod
+    @staticmethod
     def getAllItems(cls):
 
         market_items = FreshFoodsDBConnector('freshfoods','market').findAll({})
@@ -153,10 +152,27 @@ class Market:
             item.sellerID = x['sellerID']
             item.itemName = x['itemName']
             item.itemPrice = x['itemPrice']
+            item.itemQuantity = x['itemQuantity']
 
             allItems.append(item)
 
         return allItems
+
+    @classmethod
+    def getItem(cls, item_id):
+
+        item = FreshFoodsDBConnector('freshfoods','market').findOne({
+            "_id": item_id
+        })
+
+        my_item = MarketItem()
+        my_item.itemID = item['_id']
+        my_item.sellerID = item['sellerID']
+        my_item.itemName = item['itemName']
+        my_item.itemPrice = item['itemPrice']
+        my_item.itemQuantity = item['itemQuantity']
+
+        return my_item
 
         
 

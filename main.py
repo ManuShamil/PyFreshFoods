@@ -18,14 +18,11 @@ class Main:
 
         #Market.addMarketItem(myUser, myItem)
 
-        items = Market.getAllItems()
-
-        for x in items:
-            print(x.__dict__)
+        item = Market.getItem(5)
 
         myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
 
-        myUser.placeOrder(items[2], 11)
+        myUser.placeOrder(item, 11)
 
         #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
 
