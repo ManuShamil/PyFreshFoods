@@ -37,6 +37,12 @@ class FreshFoodsDBConnector:
 
         return self.client[self.databaseName][self.collectionName].insert_one(document)
 
+    def remove(self, query):
+        if self.isConnected != True:
+            return False    #if connection didn't succeed, do not proceed.
+
+        return self.client[self.databaseName][self.collectionName].delete_one(query)
+
     def findAll(self, query, projection = {}):
         if self.isConnected != True:
             return False    #if connection didn't succeed, do not proceed.
