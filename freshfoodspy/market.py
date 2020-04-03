@@ -234,6 +234,7 @@ class Market:
             my_order.itemName = Market.getItem(int(order['itemID'])).itemName
             my_order.itemID = order['itemID']
             my_order.totalPrice = order['totalPrice']
+            my_order.itemQuantity = order['itemQuantity']
 
             myOrders.append(my_order)
 

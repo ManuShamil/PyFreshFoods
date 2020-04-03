@@ -1,6 +1,9 @@
 from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, UserDetails, Market, MarketItem, Order
 
 import json
+import threading
+import time
+import random
 
 class Main:
     def __init__(self):
@@ -18,15 +21,28 @@ class Main:
 
         #Market.addMarketItem(myUser, myItem)
 
-        item = Market.getItem(5)
+        def foo():
+            
+            time.sleep(random.randint(0, 5))
 
-        myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
+            item = Market.getItem(5)
 
-        #myUser.placeOrder(item, 1)
+            time.sleep(random.randint(0, 5))
 
-        for x in myUser.getMyOrders():
+            myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
 
-            print(json.dumps(x))
+            time.sleep(random.randint(0, 5)) 
+
+            for x in myUser.getMyOrders():
+
+                print(x.__dict__)
+
+
+        for y in range(0, 1000):
+
+            mythread = threading.Thread(target=foo,)
+            mythread.start()
+
 
         #myUser.placeOrder(item, 8)
         #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
