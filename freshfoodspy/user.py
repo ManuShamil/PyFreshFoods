@@ -33,6 +33,12 @@ class UserDetails:
         userDetails.altAaddress = user_details['altAaddress']
 
         return userDetails
+
+    @classmethod
+    def buildPublicUserDetailsObject(cls, first_name, last_name):
+        
+        cls.firstName = first_name
+        cls.lastName = last_name
         
 #Main Data Model
 class User:
@@ -75,9 +81,51 @@ class User:
 
     def placeOrder(self, item:MarketItem, qty:int):
 
-        new_order = item.createOrder(self, qty)
+        UserMarketManagement(self).placeOrder(item, qty)
+
+    def getMyOrders(self):
+
+        return UserMarketManagement(self).getMyOrders()
+
+    @classmethod
+    def buildPublicUserObject(cls, user_id:int, user_details:UserDetails):
+        cls.userID = user_id
+        cls.userDetails = user_details
+        
+
+
+
+class UserMarketManagement:
+    myUser = None
+
+    def __init__(self, user:User):
+        if(user == None):
+            
+            print("User undefined")
+            return
+
+        #verify if token belongs to the user
+        if (user.tokenVerify() == False):
+            
+            print("Could not verify Token!")
+            return
+
+        user_token = user.userToken
+
+        payload:User = ff_jwt.decode(user_token)
+
+        self.myUser = user
+
+    def placeOrder(self, item:MarketItem, qty:int):
+
+        new_order = item.createOrder(self.myUser, qty)
 
         Market.placeOrder(new_order)
+
+    def getMyOrders(self):
+
+        return Market.getOrdersbyUser(self.myUser)
+
 
 
 class UserManagement:
@@ -290,6 +338,25 @@ class UserRegistration:
 
         return False
 
+
+class UserListing:
+
+    @staticmethod
+    def getUserbyID(user_id):
+
+        my_user = FreshFoodsDBConnector('freshfoods','user').findOne({
+            "_id": user_id
+        })
+
+        my_user_details = FreshFoodsDBConnector('freshfoods','userdetails').findOne({
+            "_id": user_id
+        })
+
+        myUserDetails = UserDetails().buildPublicUserDetailsObject(my_user_details['firstName'], my_user_details['lastName'])
+        
+        myUser = User().buildPublicUserObject(my_user['_id'], myUserDetails)
+
+        return myUser
 
     
 
