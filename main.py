@@ -22,8 +22,8 @@ class Main:
 
         myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
 
-        myUser.placeOrder(item, 11)
-
+        myUser.placeOrder(item, 8)
+        myUser.placeOrder(item, 8)
         #userDetails = UserDetails('FreshFoods','User 2','2000','Kerala, India')
 
         #manageUser = UserManagement(myUser, userDetails)
