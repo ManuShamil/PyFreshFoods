@@ -76,7 +76,23 @@ class Market:
 
     @staticmethod
     def cancelOrder(order:Order):
-        pass
+        
+        #reset the quantity of the market listing
+
+        FreshFoodsDBConnector('freshfoods','market').update({
+            "_id": order.itemID
+        },{
+            "$inc": {
+                "itemQuantity": order.itemQuantity
+            }
+        })
+
+        #delete the order from users order
+        FreshFoodsDBConnector('freshfoods','orders').remove({
+            "_id": order.orderID
+        })
+
+        print("[Market] : OrderID : {0} cancelled by user: {1}".format(order.orderID, order.itemBuyer.userID))
 
 
     @staticmethod

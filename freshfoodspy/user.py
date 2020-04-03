@@ -83,6 +83,10 @@ class User:
 
         UserMarketManagement(self).placeOrder(item, qty)
 
+    def cancelOrder(self, order):
+        
+        UserMarketManagement(self).cancelOrder(order)
+
     def getMyOrders(self):
 
         return UserMarketManagement(self).getMyOrders()
@@ -121,6 +125,10 @@ class UserMarketManagement:
         new_order = item.createOrder(self.myUser, qty)
 
         Market.placeOrder(new_order)
+
+    def cancelOrder(self, order):
+
+        Market.cancelOrder(order)
 
     def getMyOrders(self):
 

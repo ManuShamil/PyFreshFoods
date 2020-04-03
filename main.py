@@ -23,22 +23,22 @@ class Main:
 
         def foo():
             
-            time.sleep(random.randint(0, 5))
+            #time.sleep(random.randint(0, 5))
 
             item = Market.getItem(5)
 
-            time.sleep(random.randint(0, 5))
+            #time.sleep(random.randint(0, 5))
 
             myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
 
-            time.sleep(random.randint(0, 5)) 
+            #time.sleep(random.randint(0, 5)) 
 
-            for x in myUser.getMyOrders():
+            myrOders = myUser.getMyOrders()
 
-                print(x.__dict__)
+            myUser.cancelOrder(myrOders[0])
 
 
-        for y in range(0, 1000):
+        for y in range(0, 1):
 
             mythread = threading.Thread(target=foo,)
             mythread.start()
