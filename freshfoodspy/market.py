@@ -1,23 +1,26 @@
 from .db import FreshFoodsDBConnector
+import json
+from freshfoodspy import user
 
 class MarketItem:
 
     itemID = -1
-    sellerID = -1
     itemName = ""
     itemPrice = 0
     itemQuantity = 0
 
-    def __init__(self, itemID=-1, sellerID=-1, itemName="", itemPrice=0, itemQuantity=0):
+    itemSeller = None
+
+    def __init__(self, itemID=-1, seller=None, itemName="", itemPrice=0, itemQuantity=0):
         self.itemID = itemID
-        self.sellerID = sellerID
+        self.itemSeller = seller
         self.itemName = itemName
         self.itemPrice = itemPrice
         self.itemQuantity = itemQuantity
 
     def createOrder(self, user, qty:int):
 
-        order = Order(self, user, qty)
+        order = Order().buildOrder(self, user, qty)
 
         return order
 
@@ -29,7 +32,7 @@ class MarketItem:
             user {User} -- The user adding the item to the market
         """
 
-        cls.sellerID = user.userID
+        cls.itemSeller = user
         cls.itemName = itemName
         cls.itemPrice = itemPrice
         cls.itemQuantity = itemQuantity
@@ -37,14 +40,23 @@ class MarketItem:
         return cls
 
 class Order:
-
+    orderID = -1
     itemID = -1
-    buyerID = -1
+    itemBuyer = None
     itemName = ""
     itemQuantity = -1
     totalPrice = -1
 
-    def __init__(self, item:MarketItem, user, qty:int):
+    def __init__(self, orderID = -1, itemID= -1, itemBuyer = None, itemName="", itemQuantity=-1, totalPrice=-1):
+        self.orderID = orderID
+        self.itemID = itemID
+        self.itemBuyer = itemBuyer
+        self.itemName = itemName
+        self.itemQuantity = itemQuantity
+        self.totalPrice = totalPrice
+
+    @classmethod
+    def buildOrder(cls, item:MarketItem, user, qty:int):
         """Creates an Order Object (required by MarketItem class to place Orders)
         
         Arguments:
@@ -52,13 +64,20 @@ class Order:
             user {User} -- User Object
         """
         
-        self.itemID = item.itemID
-        self.buyerID = user.userID
-        self.itemName = item.itemName
-        self.itemQuantity = qty
-        self.totalPrice = qty * item.itemPrice
+        cls.itemID = item.itemID
+        cls.itemBuyer = user
+        cls.itemName = item.itemName
+        cls.itemQuantity = qty
+        cls.totalPrice = qty * item.itemPrice
+
+        return cls
 
 class Market:
+
+    @staticmethod
+    def cancelOrder(order:Order):
+        pass
+
 
     @staticmethod
     def placeOrder(new_order:Order):
@@ -68,10 +87,12 @@ class Market:
             sequenceValue = Market.getNextOrderID()
 
 
+            new_order.orderID = sequenceValue #set order id of the Order
+
             FreshFoodsDBConnector('freshfoods','orders').insert({
                 "_id": sequenceValue,
                 "itemID": new_order.itemID,
-                "buyerID": new_order.buyerID,
+                "buyerID": new_order.buyer.userID,
                 "itemQuantity": new_order.itemQuantity,
                 "totalPrice": new_order.totalPrice
             })
@@ -89,11 +110,11 @@ class Market:
             insert_new=False)
 
 
-            print("[Market] : User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.buyerID, new_order.itemName, new_order.itemQuantity))
+            print("[Market] : OrderID : {3} User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.buyer.userID, new_order.itemName, new_order.itemQuantity, new_order.orderID))
 
         else:
             
-            print("[Market] : Failed! placing an order for item : {1} by User {0} : Quantity: {2}(Insufficient Quantity)".format(new_order.buyerID, new_order.itemName, new_order.itemQuantity))
+            print("[Market] : Failed! placing an order for item : {1} by User {0} : Quantity: {2}(Insufficient Quantity)".format(new_order.buyer.userID, new_order.itemName, new_order.itemQuantity))
 
 
 
@@ -118,7 +139,7 @@ class Market:
 
         FreshFoodsDBConnector('freshfoods','market').insert({
             "_id": sequenceValue,
-            "sellerID": item.sellerID,
+            "sellerID": item.itemSeller.userID,
             "itemName": item.itemName,
             "itemPrice": item.itemPrice,
             "itemQuantity": item.itemQuantity
@@ -172,7 +193,7 @@ class Market:
         for x in market_items:
             item = MarketItem()
             item.itemID = x['_id']
-            item.sellerID = x['sellerID']
+            item.itemSeller = user.UserListing.getUserbyID(x['sellerID'])
             item.itemName = x['itemName']
             item.itemPrice = x['itemPrice']
             item.itemQuantity = x['itemQuantity']
@@ -190,13 +211,33 @@ class Market:
 
         my_item = MarketItem()
         my_item.itemID = item['_id']
-        my_item.sellerID = item['sellerID']
+        my_item.itemSeller = user.UserListing.getUserbyID(item['sellerID'])
         my_item.itemName = item['itemName']
         my_item.itemPrice = item['itemPrice']
         my_item.itemQuantity = item['itemQuantity']
 
         return my_item
 
-        
+    @staticmethod
+    def getOrdersbyUser(user):
+        my_orders = FreshFoodsDBConnector('freshfoods','orders').findAll({
+           "buyerID": user.userID
+        })
+
+        myOrders = []
+
+        for order in my_orders:
+
+            my_order = Order()
+            my_order.orderID = order['_id']
+            my_order.itemBuyer = user
+            my_order.itemName = Market.getItem(int(order['itemID'])).itemName
+            my_order.itemID = order['itemID']
+            my_order.totalPrice = order['totalPrice']
+
+            myOrders.append(my_order)
+
+        return myOrders
+
 
     
