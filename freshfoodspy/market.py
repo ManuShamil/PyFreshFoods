@@ -62,33 +62,53 @@ class Market:
 
     @staticmethod
     def placeOrder(new_order:Order):
+
+        if (Market.checkQuantity(new_order)):
         
-        sequenceValue = Market.getNextOrderID()
+            sequenceValue = Market.getNextOrderID()
 
 
-        FreshFoodsDBConnector('freshfoods','orders').insert({
-            "_id": sequenceValue,
-            "itemID": new_order.itemID,
-            "buyerID": new_order.buyerID,
-            "itemQuantity": new_order.itemQuantity,
-            "totalPrice": new_order.totalPrice
-        })
+            FreshFoodsDBConnector('freshfoods','orders').insert({
+                "_id": sequenceValue,
+                "itemID": new_order.itemID,
+                "buyerID": new_order.buyerID,
+                "itemQuantity": new_order.itemQuantity,
+                "totalPrice": new_order.totalPrice
+            })
 
-        #decrement the quantity in new Market Listing
+            #decrement the quantity in new Market Listing
 
-        FreshFoodsDBConnector('freshfoods', 'market').update({
-            "_id": new_order.itemID
-        },
-        {
-            "$inc": {
-                "itemQuantity": -new_order.itemQuantity
-            }
-        },
-        insert_new=False)
+            FreshFoodsDBConnector('freshfoods', 'market').update({
+                "_id": new_order.itemID
+            },
+            {
+                "$inc": {
+                    "itemQuantity": -new_order.itemQuantity
+                }
+            },
+            insert_new=False)
+
+
+            print("[Market] : User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.buyerID, new_order.itemName, new_order.itemQuantity))
+
+        else:
+            
+            print("[Market] : Failed! placing an order for item : {1} by User {0} : Quantity: {2}(Insufficient Quantity)".format(new_order.buyerID, new_order.itemName, new_order.itemQuantity))
 
 
 
-        print("[Market] : User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.buyerID, new_order.itemName, new_order.itemQuantity))
+    @staticmethod
+    def checkQuantity(order:Order):
+
+        quantity = FreshFoodsDBConnector('freshfoods', 'market').findOne({
+            "_id": order.itemID
+        })['itemQuantity']
+
+        if (order.itemQuantity <= quantity):
+            return True
+        else:
+            return False
+
 
 
     @staticmethod
