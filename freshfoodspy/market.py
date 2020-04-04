@@ -78,14 +78,7 @@ class Market:
     def cancelOrder(order:Order):
         
         #reset the quantity of the market listing
-
-        FreshFoodsDBConnector('freshfoods','market').update({
-            "_id": order.itemID
-        },{
-            "$inc": {
-                "itemQuantity": order.itemQuantity
-            }
-        })
+        Market.restockItem(order)
 
         #delete the order from users order
         FreshFoodsDBConnector('freshfoods','orders').remove({
@@ -94,6 +87,29 @@ class Market:
 
         print("[Market] : OrderID : {0} cancelled by user: {1}".format(order.orderID, order.itemBuyer.userID))
 
+    @staticmethod
+    def restockItem(order:Order):
+        
+        FreshFoodsDBConnector('freshfoods','market').update({
+            "_id": order.itemID
+        },{
+            "$inc": {
+                "itemQuantity": order.itemQuantity
+            }
+        })
+
+    @staticmethod
+    def consumeStock(order:Order):
+
+        FreshFoodsDBConnector('freshfoods', 'market').update({
+            "_id": order.itemID
+        },
+        {
+            "$inc": {
+                "itemQuantity": -order.itemQuantity
+            }
+        },
+        insert_new=False)
 
     @staticmethod
     def placeOrder(new_order:Order):
@@ -108,29 +124,21 @@ class Market:
             FreshFoodsDBConnector('freshfoods','orders').insert({
                 "_id": sequenceValue,
                 "itemID": new_order.itemID,
-                "buyerID": new_order.buyer.userID,
+                "buyerID": new_order.itemBuyer.userID,
                 "itemQuantity": new_order.itemQuantity,
                 "totalPrice": new_order.totalPrice
             })
 
             #decrement the quantity in new Market Listing
 
-            FreshFoodsDBConnector('freshfoods', 'market').update({
-                "_id": new_order.itemID
-            },
-            {
-                "$inc": {
-                    "itemQuantity": -new_order.itemQuantity
-                }
-            },
-            insert_new=False)
+            Market.consumeStock(new_order)
 
 
-            print("[Market] : OrderID : {3} User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.buyer.userID, new_order.itemName, new_order.itemQuantity, new_order.orderID))
+            print("[Market] : OrderID : {3} User {0} placed an order for item : {1} : Quantity : {2}".format(new_order.itemBuyer.userID, new_order.itemName, new_order.itemQuantity, new_order.orderID))
 
         else:
             
-            print("[Market] : Failed! placing an order for item : {1} by User {0} : Quantity: {2}(Insufficient Quantity)".format(new_order.buyer.userID, new_order.itemName, new_order.itemQuantity))
+            print("[Market] : Failed! placing an order for item : {1} by User {0} : Quantity: {2}(Insufficient Quantity)".format(new_order.itemBuyer.userID, new_order.itemName, new_order.itemQuantity))
 
 
 

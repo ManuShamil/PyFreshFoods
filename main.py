@@ -31,6 +31,10 @@ class Main:
 
             myUser:User = UserLogin('user8@gmail.com').loginEmail('user123')
 
+            chicken = Market.getItem(5)
+
+            myUser.placeOrder(chicken, 10)
+
             #time.sleep(random.randint(0, 5)) 
 
             myrOders = myUser.getMyOrders()
