@@ -1,4 +1,4 @@
-from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, UserDetails, Market, MarketItem, Order
+from freshfoodspy import User, UserLogin, UserRegistration, Admin, AdminLogin, UserDetails, UserManagement, UserDetails, UserListing, Market, MarketItem, Order
 
 import json
 import threading
@@ -40,6 +40,35 @@ class Main:
             myrOders = myUser.getMyOrders()
 
             myUser.cancelOrder(myrOders[0])
+
+
+
+
+            messages = myUser.getMessages()
+
+            random_user = UserListing.getUserbyID(13)
+
+            myUser.sendMessage(random_user,'Hi, User 2!')
+
+            for x in messages:
+                print(x.__dict__)
+
+
+            myUser = UserLogin('user2@freshfoods.com').loginEmail('user123')
+
+            messages = myUser.getMessages()
+
+            random_user = UserListing.getUserbyID(16)
+
+            myUser.sendMessage(random_user,'Hi, User8!')
+
+
+            myUser.readMessage(messages[0])
+
+
+            for x in messages:
+                print(x.__dict__)
+
 
 
         for y in range(0, 1):

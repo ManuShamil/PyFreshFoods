@@ -1,9 +1,21 @@
 import json
 import bcrypt
+from datetime import datetime
 
 from .db import FreshFoodsDBConnector
 from .ff_jwt import ff_jwt
 from .market import Market, MarketItem
+
+class Message:
+    messageID = -1
+    messageFrom = None
+    messageTo = None
+    messageRead = False
+
+    Message = ""
+
+    messageTimeStamp = ""
+    
 
 class UserDetails:
     firstName = ""
@@ -91,10 +103,24 @@ class User:
 
         return UserMarketManagement(self).getMyOrders()
 
+    def sendMessage(self, to, message:str):
+
+        UserManagement(self).sendMessage(to, message)
+
+    def getMessages(self):
+        
+        return UserManagement(self).getMessages()
+
+    def readMessage(self, message:Message):
+
+        UserManagement(self).readMessage(message)
+
     @classmethod
     def buildPublicUserObject(cls, user_id:int, user_details:UserDetails):
         cls.userID = user_id
         cls.userDetails = user_details
+
+        return cls
         
 
 
@@ -195,6 +221,62 @@ class UserManagement:
         if (user_details != None):
 
             return UserDetails.parse(user_details)
+
+    
+    def getMessages(self):
+        
+        my_messages = FreshFoodsDBConnector('freshfoods','usermessages').findAll({
+            "messageTo": self.myUser.userID 
+        })
+
+        myMessages = []
+
+        for x in my_messages:
+
+            message = Message()
+            message.messageID = x['_id']
+            message.messageTo = self.myUser
+            message.messageFrom = UserListing.getUserbyID(x['messageFrom'])
+            message.Message = x['Message']
+            message.messageRead = x['messageRead']
+            message.messageTimeStamp = x['messageTimeStamp']
+
+            myMessages.append(message)
+
+        return myMessages
+    
+    def sendMessage(self, to:User, message:str):
+
+        sequenceValue = FreshFoodsDBConnector('freshfoods','counter').findOneAndUpdate({
+                            "$and": [
+                                {
+                                    "collectionName": 'usermessages'
+                                },{
+                                    "columnName": '_id'
+                                }
+                        ]},
+                        {
+                            "$inc": {"sequenceValue": 1}
+                        })['sequenceValue']
+
+        FreshFoodsDBConnector('freshfoods','usermessages').insert({
+            "_id": sequenceValue + 1,
+            "messageFrom": self.myUser.userID,
+            "messageTo": to.userID,
+            "Message": message,
+            "messageRead": False,
+            "messageTimeStamp": datetime.now().isoformat()
+        })
+    
+    def readMessage(self, message:Message):
+
+        FreshFoodsDBConnector('freshfoods', 'usermessages').update({
+            "_id": message.messageID,
+        },{
+            "$set": {
+                "messageRead": True
+            }
+        })
 
 
 
@@ -349,6 +431,11 @@ class UserRegistration:
 
 class UserListing:
 
+    myUser:User = None
+
+    def __init__(self, user:User):
+        self.myUser = user
+
     @staticmethod
     def getUserbyID(user_id):
 
@@ -362,9 +449,11 @@ class UserListing:
 
         myUserDetails = UserDetails().buildPublicUserDetailsObject(my_user_details['firstName'], my_user_details['lastName'])
         
-        myUser = User().buildPublicUserObject(my_user['_id'], myUserDetails)
+        myUser:User = User().buildPublicUserObject(my_user['_id'], myUserDetails)
+
 
         return myUser
+
 
     
 
